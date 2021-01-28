@@ -1,0 +1,22 @@
+[package]
+name = "utf8-io-fuzz"
+version = "0.0.0"
+edition = "2018"
+publish = false
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.3.4"
+utf8-io = { path = "..", features = ["layered-io"] }
+layered-io = { version = "0.2.0", branch = "main" }
+
+[[bin]]
+name = "utf8_reader"
+path = "fuzz_targets/utf8_reader.rs"
+test = false
+doc = false
+
+# Work around https://github.com/rust-lang/cargo/issues/8338
+[workspace]
