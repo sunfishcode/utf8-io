@@ -34,10 +34,7 @@ pub fn copy_str<R: ReadStr + ?Sized, W: WriteStr + ?Sized>(
 /// Also, like `copy_str`, but uses `read_str_with_status` to avoid performing
 /// an extra `read` at the end.
 #[cfg(feature = "layered-io")]
-pub fn copy_str_using_status<
-    R: ReadStrLayered + Bufferable + ?Sized,
-    W: WriteStr + Bufferable + ?Sized,
->(
+pub fn copy_str_using_status<R: ReadStrLayered + ?Sized, W: WriteStr + Bufferable + ?Sized>(
     reader: &mut R,
     writer: &mut W,
 ) -> io::Result<u64> {

@@ -74,7 +74,7 @@ impl<Inner: ReadLayered> ReadLayered for Utf8Reader<Inner> {
 }
 
 #[cfg(feature = "layered-io")]
-impl<Inner: ReadLayered + Bufferable> Bufferable for Utf8Reader<Inner> {
+impl<Inner: ReadLayered> Bufferable for Utf8Reader<Inner> {
     #[inline]
     fn abandon(&mut self) {
         Utf8Input::abandon(self)
