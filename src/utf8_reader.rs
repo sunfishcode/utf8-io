@@ -156,7 +156,7 @@ fn translate_via_reader(bytes: &[u8]) -> String {
 }
 
 #[cfg(test)]
-fn translate_via_ext_reader(bytes: &[u8]) -> String {
+fn translate_via_layered_reader(bytes: &[u8]) -> String {
     let mut reader = Utf8Reader::new(layered_io::LayeredReader::new(bytes));
     let mut s = String::new();
     reader.read_to_string(&mut s).unwrap();
@@ -190,7 +190,7 @@ fn translate_with_small_buffer(bytes: &[u8]) -> String {
 #[cfg(test)]
 #[cfg(not(feature = "layered-io"))]
 fn translate_with_small_buffer(bytes: &[u8]) -> String {
-    let mut reader = Utf8Reader::new(layered_io::SliceReader::new(bytes));
+    let mut reader = Utf8Reader::new(bytes);
     let mut v = Vec::new();
     let mut buf = [0; 4];
     loop {
@@ -208,7 +208,7 @@ fn translate_with_small_buffer(bytes: &[u8]) -> String {
 #[cfg(test)]
 fn test(bytes: &[u8], s: &str) {
     assert_eq!(translate_via_reader(bytes), s);
-    assert_eq!(translate_via_ext_reader(bytes), s);
+    assert_eq!(translate_via_layered_reader(bytes), s);
     assert_eq!(translate_via_slice_reader(bytes), s);
     assert_eq!(translate_with_small_buffer(bytes), s);
 
@@ -220,7 +220,7 @@ fn test(bytes: &[u8], s: &str) {
             s
         );
         assert_eq!(
-            str::from_utf8(&translate_via_ext_reader(&v).as_bytes()[i..]).unwrap(),
+            str::from_utf8(&translate_via_layered_reader(&v).as_bytes()[i..]).unwrap(),
             s
         );
         assert_eq!(
