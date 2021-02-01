@@ -21,7 +21,7 @@ pub trait ReadStr: Read {
 /// Extend the `ReadLayered` trait with `read_str_with_status`, a method for
 /// reading UTF-8 data.
 #[cfg(feature = "layered-io")]
-pub trait ReadStrLayered: ReadLayered {
+pub trait ReadStrLayered: ReadLayered + ReadStr {
     /// Like `read_with_status` but produces the result in a `str`. Be sure to
     /// check the return value to see how many bytes were written.
     ///
