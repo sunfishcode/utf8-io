@@ -23,7 +23,7 @@ unsafe-io = "0.3.0"
 
 [dev-dependencies]
 anyhow = "1.0.37"
-layered-io = "0.2.0"
+layered-io = "0.2.1"
 
 [badges]
 maintenance = { status = "actively-developed" }
