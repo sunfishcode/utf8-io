@@ -1,10 +1,6 @@
 use crate::{utf8_output::Utf8Output, WriteStr};
 #[cfg(feature = "layered-io")]
 use layered_io::{Bufferable, WriteLayered};
-#[cfg(unix)]
-use std::os::unix::io::{AsRawFd, RawFd};
-#[cfg(target_os = "wasi")]
-use std::os::wasi::io::{AsRawFd, RawFd};
 use std::{
     fmt,
     io::{self, Write},
@@ -12,8 +8,11 @@ use std::{
 };
 #[cfg(feature = "terminal-io")]
 use terminal_io::{Terminal, TerminalColorSupport, WriteTerminal};
+#[cfg(not(windows))]
+use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
-use unsafe_io::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::OwnsRaw;
 
 /// A [`Write`] implementation which translates into an output `Write`
 /// producing a valid UTF-8 sequence from an arbitrary byte sequence from an
@@ -142,6 +141,9 @@ impl<Inner: Write + AsRawHandleOrSocket> AsRawHandleOrSocket for Utf8Writer<Inne
         self.inner.as_raw_handle_or_socket()
     }
 }
+
+// Safety: `Utf8Writer` implements `OwnsRaw` if `Inner` does.
+unsafe impl<Inner: Write + OwnsRaw> OwnsRaw for Utf8Writer<Inner> {}
 
 impl<Inner: Write + fmt::Debug> fmt::Debug for Utf8Writer<Inner> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

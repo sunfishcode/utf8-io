@@ -1,9 +1,5 @@
 use crate::{utf8_input::Utf8Input, utf8_output::Utf8Output, ReadStr, WriteStr};
 use duplex::{Duplex, HalfDuplex};
-#[cfg(unix)]
-use std::os::unix::io::{AsRawFd, RawFd};
-#[cfg(target_os = "wasi")]
-use std::os::wasi::io::{AsRawFd, RawFd};
 use std::{
     fmt,
     io::{self, Read, Write},
@@ -11,8 +7,11 @@ use std::{
 };
 #[cfg(feature = "terminal-io")]
 use terminal_io::{DuplexTerminal, ReadTerminal, Terminal, TerminalColorSupport, WriteTerminal};
+#[cfg(not(windows))]
+use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
-use unsafe_io::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::OwnsRaw;
 #[cfg(feature = "layered-io")]
 use {
     crate::ReadStrLayered,
@@ -213,6 +212,9 @@ impl<Inner: HalfDuplex + AsRawHandleOrSocket> AsRawHandleOrSocket for Utf8Duplex
         self.inner.as_raw_handle_or_socket()
     }
 }
+
+// Safety: `Utf8Duplexer` implements `OwnsRaw` if `Inner` does.
+unsafe impl<Inner: HalfDuplex + OwnsRaw> OwnsRaw for Utf8Duplexer<Inner> {}
 
 impl<Inner: HalfDuplex + fmt::Debug> fmt::Debug for Utf8Duplexer<Inner> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

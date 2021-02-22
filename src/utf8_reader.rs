@@ -1,8 +1,4 @@
 use crate::{utf8_input::Utf8Input, ReadStr};
-#[cfg(unix)]
-use std::os::unix::io::{AsRawFd, RawFd};
-#[cfg(target_os = "wasi")]
-use std::os::wasi::io::{AsRawFd, RawFd};
 use std::{
     fmt,
     io::{self, Read},
@@ -10,8 +6,11 @@ use std::{
 };
 #[cfg(feature = "terminal-io")]
 use terminal_io::{ReadTerminal, Terminal};
+#[cfg(not(windows))]
+use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
-use unsafe_io::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
+use unsafe_io::OwnsRaw;
 #[cfg(feature = "layered-io")]
 use {
     crate::ReadStrLayered,
@@ -22,7 +21,8 @@ use {
 /// an arbitrary byte sequence into a valid UTF-8 sequence with invalid
 /// sequences replaced by [U+FFFD (REPLACEMENT CHARACTER)] in the manner of
 /// [`String::from_utf8_lossy`], where scalar value encodings never straddle
-/// `read` calls (callers can do [`str::from_utf8`] and it will always succeed).
+/// `read` calls (callers can do [`str::from_utf8`] and it will always
+/// succeed).
 ///
 /// [U+FFFD (REPLACEMENT CHARACTER)]: https://util.unicode.org/UnicodeJsps/character.jsp?a=FFFD
 pub struct Utf8Reader<Inner: Read> {
@@ -138,6 +138,9 @@ impl<Inner: Read + AsRawHandleOrSocket> AsRawHandleOrSocket for Utf8Reader<Inner
         self.inner.as_raw_handle_or_socket()
     }
 }
+
+// Safety: `Utf8Reader` implements `OwnsRaw` if `Inner` does.
+unsafe impl<Inner: Read + OwnsRaw> OwnsRaw for Utf8Reader<Inner> {}
 
 impl<Inner: Read + fmt::Debug> fmt::Debug for Utf8Reader<Inner> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

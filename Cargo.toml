@@ -16,10 +16,8 @@ rustc_version = "0.3.2"
 [dependencies]
 duplex = "0.1.0"
 layered-io = { version = "0.2.0", optional = true }
-terminal-io = { version = "0.1.0", optional = true }
-
-[target.'cfg(windows)'.dependencies]
-unsafe-io = "0.3.0"
+terminal-io = { version = "0.2.0", optional = true }
+unsafe-io = "0.5.0"
 
 [dev-dependencies]
 anyhow = "1.0.37"
