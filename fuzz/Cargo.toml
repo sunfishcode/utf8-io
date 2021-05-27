@@ -10,7 +10,7 @@ cargo-fuzz = true
 [dependencies]
 libfuzzer-sys = "0.3.4"
 utf8-io = { path = "..", features = ["layered-io"] }
-layered-io = { version = "0.3.0", branch = "main" }
+layered-io = { version = "0.5.2" }
 
 [[bin]]
 name = "utf8_reader"
