@@ -6,15 +6,19 @@ use std::{
 };
 #[cfg(feature = "terminal-io")]
 use terminal_io::{ReadTerminal, Terminal};
-#[cfg(not(windows))]
-use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
-use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
-use unsafe_io::OwnsRaw;
+use unsafe_io::os::windows::{
+    AsHandleOrSocket, AsRawHandleOrSocket, BorrowedHandleOrSocket, RawHandleOrSocket,
+};
 #[cfg(feature = "layered-io")]
 use {
     crate::ReadStrLayered,
     layered_io::{Bufferable, ReadLayered, Status},
+};
+#[cfg(not(windows))]
+use {
+    io_lifetimes::{AsFd, BorrowedFd},
+    unsafe_io::os::posish::{AsRawFd, RawFd},
 };
 
 /// A [`Read`] implementation which translates from an input `Read` producing
@@ -131,6 +135,14 @@ impl<Inner: Read + AsRawFd> AsRawFd for Utf8Reader<Inner> {
     }
 }
 
+#[cfg(not(windows))]
+impl<Inner: Read + AsFd> AsFd for Utf8Reader<Inner> {
+    #[inline]
+    fn as_fd(&self) -> BorrowedFd<'_> {
+        self.inner.as_fd()
+    }
+}
+
 #[cfg(windows)]
 impl<Inner: Read + AsRawHandleOrSocket> AsRawHandleOrSocket for Utf8Reader<Inner> {
     #[inline]
@@ -139,8 +151,13 @@ impl<Inner: Read + AsRawHandleOrSocket> AsRawHandleOrSocket for Utf8Reader<Inner
     }
 }
 
-// Safety: `Utf8Reader` implements `OwnsRaw` if `Inner` does.
-unsafe impl<Inner: Read + OwnsRaw> OwnsRaw for Utf8Reader<Inner> {}
+#[cfg(windows)]
+impl<Inner: Read + AsHandleOrSocket> AsHandleOrSocket for Utf8Reader<Inner> {
+    #[inline]
+    fn as_handle_or_socket(&self) -> BorrowedHandleOrSocket<'_> {
+        self.inner.as_handle_or_socket()
+    }
+}
 
 impl<Inner: Read + fmt::Debug> fmt::Debug for Utf8Reader<Inner> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

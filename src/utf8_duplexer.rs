@@ -7,16 +7,21 @@ use std::{
 };
 #[cfg(feature = "terminal-io")]
 use terminal_io::{DuplexTerminal, ReadTerminal, Terminal, TerminalColorSupport, WriteTerminal};
-#[cfg(not(windows))]
-use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
-use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
-use unsafe_io::OwnsRaw;
+use unsafe_io::os::windows::{
+    AsHandleOrSocket, AsRawHandleOrSocket, AsReadWriteHandleOrSocket, BorrowedHandleOrSocket,
+    RawHandleOrSocket,
+};
 #[cfg(feature = "layered-io")]
 use {
     crate::ReadStrLayered,
     layered_io::{Bufferable, HalfDuplexLayered, ReadLayered, Status, WriteLayered},
     std::cmp::max,
+};
+#[cfg(not(windows))]
+use {
+    io_lifetimes::{AsFd, BorrowedFd},
+    unsafe_io::os::posish::{AsRawFd, AsReadWriteFd, RawFd},
 };
 
 /// An interactive UTF-8 stream, combining `Utf8Reader` and `Utf8Writer`.
@@ -205,6 +210,14 @@ impl<Inner: HalfDuplex + AsRawFd> AsRawFd for Utf8Duplexer<Inner> {
     }
 }
 
+#[cfg(not(windows))]
+impl<Inner: HalfDuplex + AsFd> AsFd for Utf8Duplexer<Inner> {
+    #[inline]
+    fn as_fd(&self) -> BorrowedFd<'_> {
+        self.inner.as_fd()
+    }
+}
+
 #[cfg(windows)]
 impl<Inner: HalfDuplex + AsRawHandleOrSocket> AsRawHandleOrSocket for Utf8Duplexer<Inner> {
     #[inline]
@@ -213,13 +226,46 @@ impl<Inner: HalfDuplex + AsRawHandleOrSocket> AsRawHandleOrSocket for Utf8Duplex
     }
 }
 
-// Safety: `Utf8Duplexer` implements `OwnsRaw` if `Inner` does.
-unsafe impl<Inner: HalfDuplex + OwnsRaw> OwnsRaw for Utf8Duplexer<Inner> {}
+#[cfg(windows)]
+impl<Inner: HalfDuplex + AsHandleOrSocket> AsHandleOrSocket for Utf8Duplexer<Inner> {
+    #[inline]
+    fn as_handle_or_socket(&self) -> BorrowedHandleOrSocket<'_> {
+        self.inner.as_handle_or_socket()
+    }
+}
 
 impl<Inner: HalfDuplex + fmt::Debug> fmt::Debug for Utf8Duplexer<Inner> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut b = f.debug_struct("Utf8Duplexer");
         b.field("inner", &self.inner);
         b.finish()
+    }
+}
+
+#[cfg(not(windows))]
+impl<Inner: HalfDuplex + AsReadWriteFd> AsReadWriteFd for Utf8Duplexer<Inner> {
+    #[inline]
+    fn as_read_fd(&self) -> BorrowedFd<'_> {
+        self.inner.as_read_fd()
+    }
+
+    #[inline]
+    fn as_write_fd(&self) -> BorrowedFd<'_> {
+        self.inner.as_write_fd()
+    }
+}
+
+#[cfg(windows)]
+impl<Inner: HalfDuplex + AsReadWriteHandleOrSocket> AsReadWriteHandleOrSocket
+    for Utf8Duplexer<Inner>
+{
+    #[inline]
+    fn as_read_handle_or_socket(&self) -> BorrowedHandleOrSocket<'_> {
+        self.inner.as_read_handle_or_socket()
+    }
+
+    #[inline]
+    fn as_write_handle_or_socket(&self) -> BorrowedHandleOrSocket<'_> {
+        self.inner.as_write_handle_or_socket()
     }
 }

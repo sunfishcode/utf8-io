@@ -8,11 +8,15 @@ use std::{
 };
 #[cfg(feature = "terminal-io")]
 use terminal_io::{Terminal, TerminalColorSupport, WriteTerminal};
-#[cfg(not(windows))]
-use unsafe_io::os::posish::{AsRawFd, RawFd};
 #[cfg(windows)]
-use unsafe_io::os::windows::{AsRawHandleOrSocket, RawHandleOrSocket};
-use unsafe_io::OwnsRaw;
+use unsafe_io::os::windows::{
+    AsHandleOrSocket, AsRawHandleOrSocket, BorrowedHandleOrSocket, RawHandleOrSocket,
+};
+#[cfg(not(windows))]
+use {
+    io_lifetimes::{AsFd, BorrowedFd},
+    unsafe_io::os::posish::{AsRawFd, RawFd},
+};
 
 /// A [`Write`] implementation which translates into an output `Write`
 /// producing a valid UTF-8 sequence from an arbitrary byte sequence from an
@@ -134,6 +138,14 @@ impl<Inner: Write + AsRawFd> AsRawFd for Utf8Writer<Inner> {
     }
 }
 
+#[cfg(not(windows))]
+impl<Inner: Write + AsFd> AsFd for Utf8Writer<Inner> {
+    #[inline]
+    fn as_fd(&self) -> BorrowedFd<'_> {
+        self.inner.as_fd()
+    }
+}
+
 #[cfg(windows)]
 impl<Inner: Write + AsRawHandleOrSocket> AsRawHandleOrSocket for Utf8Writer<Inner> {
     #[inline]
@@ -142,8 +154,13 @@ impl<Inner: Write + AsRawHandleOrSocket> AsRawHandleOrSocket for Utf8Writer<Inne
     }
 }
 
-// Safety: `Utf8Writer` implements `OwnsRaw` if `Inner` does.
-unsafe impl<Inner: Write + OwnsRaw> OwnsRaw for Utf8Writer<Inner> {}
+#[cfg(windows)]
+impl<Inner: Write + AsHandleOrSocket> AsHandleOrSocket for Utf8Writer<Inner> {
+    #[inline]
+    fn as_handle_or_socket(&self) -> BorrowedHandleOrSocket<'_> {
+        self.inner.as_handle_or_socket()
+    }
+}
 
 impl<Inner: Write + fmt::Debug> fmt::Debug for Utf8Writer<Inner> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
