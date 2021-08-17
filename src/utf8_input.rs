@@ -1,10 +1,8 @@
 use crate::{Utf8Duplexer, Utf8Reader};
 use duplex::Duplex;
-use std::{
-    cmp::min,
-    io::{self, copy, repeat, Cursor, Read, Write},
-    str,
-};
+use std::cmp::min;
+use std::io::{self, copy, repeat, Cursor, Read, Write};
+use std::str;
 #[cfg(feature = "layered-io")]
 use {
     layered_io::{HalfDuplexLayered, ReadLayered, Status},

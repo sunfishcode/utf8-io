@@ -1,7 +1,5 @@
-use std::{
-    fmt::{self, Arguments},
-    io::{self, Write},
-};
+use std::fmt::{self, Arguments};
+use std::io::{self, Write};
 
 /// Add a convenience and optimizing method for writing from `str`.
 pub trait WriteStr: Write {

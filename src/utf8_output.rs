@@ -2,11 +2,9 @@ use crate::{default_write_str, Utf8Duplexer, Utf8Writer};
 use duplex::Duplex;
 #[cfg(feature = "layered-io")]
 use layered_io::{HalfDuplexLayered, WriteLayered};
-use std::{
-    cmp::min,
-    io::{self, Read, Write},
-    str,
-};
+use std::cmp::min;
+use std::io::{self, Read, Write};
+use std::str;
 
 pub(crate) trait Utf8WriterInternals<Inner: Write>: Write {
     fn impl_(&mut self) -> &mut Utf8Output;

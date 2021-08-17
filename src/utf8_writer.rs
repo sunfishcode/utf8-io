@@ -1,11 +1,9 @@
-use crate::{utf8_output::Utf8Output, WriteStr};
+use crate::utf8_output::Utf8Output;
+use crate::WriteStr;
 #[cfg(feature = "layered-io")]
 use layered_io::{Bufferable, WriteLayered};
-use std::{
-    fmt,
-    io::{self, Write},
-    str,
-};
+use std::io::{self, Write};
+use std::{fmt, str};
 #[cfg(feature = "terminal-io")]
 use terminal_io::{Terminal, TerminalColorSupport, WriteTerminal};
 #[cfg(windows)]

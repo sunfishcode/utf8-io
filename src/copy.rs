@@ -61,7 +61,8 @@ pub fn copy_str_using_status<R: ReadStrLayered + ?Sized, W: WriteStr + Bufferabl
 #[test]
 fn test_copy_str() {
     use crate::{Utf8Reader, Utf8Writer};
-    use std::{io::Cursor, str};
+    use std::io::Cursor;
+    use std::str;
 
     let text = "hello world ☃";
     let mut input = Utf8Reader::new(Cursor::new(text.to_string()));
@@ -78,7 +79,8 @@ fn test_copy_str() {
 fn test_copy_str_using_status() {
     use crate::{Utf8Reader, Utf8Writer};
     use layered_io::{LayeredReader, LayeredWriter};
-    use std::{io::Cursor, str};
+    use std::io::Cursor;
+    use std::str;
 
     let text = "hello world ☃";
     let mut input = Utf8Reader::new(LayeredReader::new(Cursor::new(text.to_string())));

@@ -1,10 +1,9 @@
-use crate::{utf8_input::Utf8Input, utf8_output::Utf8Output, ReadStr, WriteStr};
+use crate::utf8_input::Utf8Input;
+use crate::utf8_output::Utf8Output;
+use crate::{ReadStr, WriteStr};
 use duplex::{Duplex, HalfDuplex};
-use std::{
-    fmt,
-    io::{self, Read, Write},
-    str,
-};
+use std::io::{self, Read, Write};
+use std::{fmt, str};
 #[cfg(feature = "terminal-io")]
 use terminal_io::{DuplexTerminal, ReadTerminal, Terminal, TerminalColorSupport, WriteTerminal};
 #[cfg(windows)]

@@ -1,9 +1,7 @@
-use crate::{utf8_input::Utf8Input, ReadStr};
-use std::{
-    fmt,
-    io::{self, Read},
-    str,
-};
+use crate::utf8_input::Utf8Input;
+use crate::ReadStr;
+use std::io::{self, Read};
+use std::{fmt, str};
 #[cfg(feature = "terminal-io")]
 use terminal_io::{ReadTerminal, Terminal};
 #[cfg(windows)]

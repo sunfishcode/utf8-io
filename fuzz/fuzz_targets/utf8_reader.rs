@@ -8,7 +8,8 @@ use std::str;
 use utf8_io::Utf8Reader;
 
 fuzz_target!(|bytes: &[u8]| {
-    // Reading from a `Utf8Reader` should produce the same output as `String::from_utf8_lossy`.
+    // Reading from a `Utf8Reader` should produce the same output as
+    // `String::from_utf8_lossy`.
     let lossy = String::from_utf8_lossy(bytes).to_string();
     let input = bytes;
     let mut reader = Utf8Reader::new(LayeredReader::new(input));
@@ -31,7 +32,8 @@ fuzz_target!(|bytes: &[u8]| {
         Err(_) => assert_eq!(lossy, b4s + "\u{fffd}"),
     }
 
-    // Reading with 8-byte buffers should produce the same results as reading with 4-byte buffers.
+    // Reading with 8-byte buffers should produce the same results as reading with
+    // 4-byte buffers.
     let input = bytes;
     let mut reader = Utf8Reader::new(LayeredReader::new(input));
     let mut buf = [0; 8];
