@@ -21,7 +21,7 @@ use {
 #[cfg(not(windows))]
 use {
     io_lifetimes::{AsFd, BorrowedFd},
-    unsafe_io::os::posish::{AsRawFd, AsReadWriteFd, RawFd},
+    unsafe_io::os::rsix::{AsRawFd, AsReadWriteFd, RawFd},
 };
 
 /// An interactive UTF-8 stream, combining `Utf8Reader` and `Utf8Writer`.
