@@ -27,6 +27,13 @@
  - [`Utf8Duplexer`] represents an interactive stream and implements both
    `ReadStr` and `WriteStr`.
 
+## Similar crates
+
+`Utf8Reader` is similar [`utf8-read`], but differs in that it silently turns
+invalid byte sequences into replacement characters rather than reporting an
+error.
+
+[`utf8-read`]: https://crates.io/crates/utf8-read
 [`ReadStr`]: https://docs.rs/utf8-io/latest/utf8_io/trait.ReadStr.html
 [`WriteStr`]: https://docs.rs/utf8-io/latest/utf8_io/trait.WriteStr.html
 [`Utf8Reader`]: https://docs.rs/utf8-io/latest/utf8_io/struct.Utf8Reader.html
