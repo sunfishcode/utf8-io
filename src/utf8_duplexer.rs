@@ -2,15 +2,15 @@ use crate::utf8_input::Utf8Input;
 use crate::utf8_output::Utf8Output;
 use crate::{ReadStr, WriteStr};
 use duplex::{Duplex, HalfDuplex};
+#[cfg(windows)]
+use io_extras::os::windows::{
+    AsHandleOrSocket, AsRawHandleOrSocket, AsReadWriteHandleOrSocket, BorrowedHandleOrSocket,
+    RawHandleOrSocket,
+};
 use std::io::{self, Read, Write};
 use std::{fmt, str};
 #[cfg(feature = "terminal-io")]
 use terminal_io::{DuplexTerminal, ReadTerminal, Terminal, TerminalColorSupport, WriteTerminal};
-#[cfg(windows)]
-use unsafe_io::os::windows::{
-    AsHandleOrSocket, AsRawHandleOrSocket, AsReadWriteHandleOrSocket, BorrowedHandleOrSocket,
-    RawHandleOrSocket,
-};
 #[cfg(feature = "layered-io")]
 use {
     crate::ReadStrLayered,
@@ -19,8 +19,8 @@ use {
 };
 #[cfg(not(windows))]
 use {
+    io_extras::os::rustix::{AsRawFd, AsReadWriteFd, RawFd},
     io_lifetimes::{AsFd, BorrowedFd},
-    unsafe_io::os::rsix::{AsRawFd, AsReadWriteFd, RawFd},
 };
 
 /// An interactive UTF-8 stream, combining `Utf8Reader` and `Utf8Writer`.
