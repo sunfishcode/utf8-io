@@ -11,12 +11,12 @@ edition = "2018"
 exclude = ["/.github"]
 
 [dependencies]
-duplex = "0.15.0"
-layered-io = { version = "0.20.0", optional = true }
-terminal-io = { version = "0.17.0", optional = true }
+duplex = "0.16.0"
+layered-io = { version = "0.21.0", optional = true }
+terminal-io = { version = "0.18.0", optional = true }
 io-extras = "0.17.0"
 io-lifetimes = { version = "1.0.0", default-features = false }
 
 [dev-dependencies]
 anyhow = "1.0.37"
-layered-io = "0.20.0"
+layered-io = "0.21.0"
