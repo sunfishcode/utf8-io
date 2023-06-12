@@ -20,7 +20,7 @@ use {
 #[cfg(not(windows))]
 use {
     io_extras::os::rustix::{AsRawFd, AsReadWriteFd, RawFd},
-    io_lifetimes::{AsFd, BorrowedFd},
+    std::os::fd::{AsFd, BorrowedFd},
 };
 
 /// An interactive UTF-8 stream, combining `Utf8Reader` and `Utf8Writer`.

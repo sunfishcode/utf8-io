@@ -13,7 +13,7 @@ use terminal_io::{Terminal, TerminalColorSupport, WriteTerminal};
 #[cfg(not(windows))]
 use {
     io_extras::os::rustix::{AsRawFd, RawFd},
-    io_lifetimes::{AsFd, BorrowedFd},
+    std::os::fd::{AsFd, BorrowedFd},
 };
 
 /// A [`Write`] implementation which translates into an output `Write`
