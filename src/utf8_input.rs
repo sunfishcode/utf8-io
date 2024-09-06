@@ -11,8 +11,10 @@ use {
 
 pub(crate) trait Utf8ReaderInternals<Inner: Read>: Read {
     fn impl_(&mut self) -> &mut Utf8Input;
+    #[cfg(feature = "layered-io")]
     fn inner(&self) -> &Inner;
     fn inner_mut(&mut self) -> &mut Inner;
+    #[cfg(feature = "layered-io")]
     fn into_inner(self) -> Inner;
 }
 
@@ -27,6 +29,7 @@ impl<Inner: Read> Utf8ReaderInternals<Inner> for Utf8Reader<Inner> {
         &mut self.input
     }
 
+    #[cfg(feature = "layered-io")]
     fn inner(&self) -> &Inner {
         &self.inner
     }
@@ -35,6 +38,7 @@ impl<Inner: Read> Utf8ReaderInternals<Inner> for Utf8Reader<Inner> {
         &mut self.inner
     }
 
+    #[cfg(feature = "layered-io")]
     fn into_inner(self) -> Inner {
         self.inner
     }
@@ -48,6 +52,7 @@ impl<Inner: Duplex + Read + Write> Utf8ReaderInternals<Inner> for Utf8Duplexer<I
         &mut self.input
     }
 
+    #[cfg(feature = "layered-io")]
     fn inner(&self) -> &Inner {
         &self.inner
     }
@@ -56,6 +61,7 @@ impl<Inner: Duplex + Read + Write> Utf8ReaderInternals<Inner> for Utf8Duplexer<I
         &mut self.inner
     }
 
+    #[cfg(feature = "layered-io")]
     fn into_inner(self) -> Inner {
         self.inner
     }

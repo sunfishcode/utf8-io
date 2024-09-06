@@ -8,6 +8,7 @@ use std::str;
 
 pub(crate) trait Utf8WriterInternals<Inner: Write>: Write {
     fn impl_(&mut self) -> &mut Utf8Output;
+    #[cfg(feature = "layered-io")]
     fn inner(&self) -> &Inner;
     fn inner_mut(&mut self) -> &mut Inner;
     fn into_inner(self) -> Inner;
@@ -25,6 +26,7 @@ impl<Inner: Write> Utf8WriterInternals<Inner> for Utf8Writer<Inner> {
         &mut self.output
     }
 
+    #[cfg(feature = "layered-io")]
     fn inner(&self) -> &Inner {
         &self.inner
     }
@@ -53,6 +55,7 @@ impl<Inner: Duplex + Read + Write> Utf8WriterInternals<Inner> for Utf8Duplexer<I
         &mut self.output
     }
 
+    #[cfg(feature = "layered-io")]
     fn inner(&self) -> &Inner {
         &self.inner
     }
